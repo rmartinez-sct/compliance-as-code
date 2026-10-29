@@ -1,0 +1,32 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The /etc/cron.allow file must exist and have 0640 permissions") }}}
+    <criteria>
+      <criterion comment="Check /etc/cron.allow exists and has max 0640 permissions" test_ref="test_custom_cron_allow_exists_perms" />
+    </criteria>
+  </definition>
+
+  <!-- check_existence="all_exist" es la clave para que dé fail si el archivo falta -->
+  <unix:file_test check="all" check_existence="all_exist" comment="/etc/cron.allow exists and has correct perms" id="test_custom_cron_allow_exists_perms" version="1">
+    <unix:object object_ref="object_custom_cron_allow_file" />
+    <unix:state state_ref="state_custom_cron_allow_0640" />
+  </unix:file_test>
+
+  <unix:file_object id="object_custom_cron_allow_file" version="1">
+    <unix:filepath>/etc/cron.allow</unix:filepath>
+  </unix:file_object>
+
+  <unix:file_state id="state_custom_cron_allow_0640" version="1" operator="AND">
+    <unix:user_id datatype="int">0</unix:user_id>
+    <unix:group_id datatype="int">0</unix:group_id>
+    <unix:suid datatype="boolean">false</unix:suid>
+    <unix:sgid datatype="boolean">false</unix:sgid>
+    <unix:sticky datatype="boolean">false</unix:sticky>
+    <unix:uexec datatype="boolean">false</unix:uexec>
+    <unix:gwrite datatype="boolean">false</unix:gwrite>
+    <unix:gexec datatype="boolean">false</unix:gexec>
+    <unix:oread datatype="boolean">false</unix:oread>
+    <unix:owrite datatype="boolean">false</unix:owrite>
+    <unix:oexec datatype="boolean">false</unix:oexec>
+  </unix:file_state>
+</def-group>

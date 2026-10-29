@@ -1,0 +1,5 @@
+documentation_complete: true
+title: 'Ensure All Non-Root Users Home Directories Have 0750 Permissions'
+description: 'Home directories must have permissions of 0750 or stricter.'
+rationale: 'Permissive rights allow unauthorized users to view or modify files.'
+severity: medium

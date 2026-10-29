@@ -1,0 +1,19 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The system login banner text should be set exactly to the RSI standard in /etc/issue.") }}}
+    <criteria>
+      <criterion comment="Exact RSI banner in /etc/issue" test_ref="test_custom_banner_etc_issue_rsi_exact" />
+    </criteria>
+  </definition>
+
+  <ind:textfilecontent54_test check="all" check_existence="all_exist" comment="correct exact banner in /etc/issue" id="test_custom_banner_etc_issue_rsi_exact" version="1">
+    <ind:object object_ref="object_custom_banner_etc_issue_rsi_exact" />
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="object_custom_banner_etc_issue_rsi_exact" version="1">
+    <ind:behaviors singleline="true" multiline="false" />
+    <ind:filepath>/etc/issue</ind:filepath>
+    <ind:pattern operation="pattern match">^Está terminantemente prohibido el acceso no autorizado a este sistema así como el uso indebido del mismo, conforme a la normativa de la compañía y la legislación vigente\. Si entra en el sistema, admite conocer las políticas de seguridad de la compañía y da el consentimiento para que sus actividades sean monitorizadas\.[[:space:]]+La INFORMACION contenida en este servidor puede tener caracter CONFIDENCIAL o RESTRINGIDO según las políticas de seguridad de RSI, por lo que deberá CONOCER y APLICAR las medidas de seguridad correspondientes\.[[:space:]]*$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>

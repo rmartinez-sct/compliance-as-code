@@ -1,0 +1,35 @@
+documentation_complete: true
+
+title: 'Verify Group Ownership on SSH Server Private *_key Key Files (Custom Root)'
+
+description: |-
+    SSH server private keys, files that match the <code>/etc/ssh/*_key</code> glob, must be
+    group-owned by the <code>root</code> group.
+
+rationale: |-
+    If an unauthorized user obtains the private SSH host key file, the host could be impersonated.
+
+severity: medium
+
+ocil_clause: 'the file is not group-owned by root'
+
+ocil: |-
+    To verify that all private SSH host key files are group-owned by root, run the following command:
+    <pre>$ stat -c "%G %n" /etc/ssh/*_key</pre>
+    The output should show "root" for all matching files.
+
+warnings:
+    - general: |-
+        Remediation is not possible at bootable container build time because SSH host
+        keys are generated post-deployment.
+
+platform: system_with_kernel
+
+template:
+    name: file_groupowner
+    vars:
+        filepath:
+            - /etc/ssh/
+        file_regex:
+            - ^.*_key$
+        gid_or_name: '0'

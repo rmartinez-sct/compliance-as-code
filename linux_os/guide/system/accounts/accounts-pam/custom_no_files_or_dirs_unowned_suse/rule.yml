@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Ensure All Files And Directories Are Owned by a Valid User (Custom SUSE OVAL)'
+
+description: |-
+    If any files or directories are not owned by a valid defined user, the cause must be investigated. 
+    This rule ensures all files belong to a valid system user defined in /etc/passwd.
+
+rationale: |-
+    Unowned files and directories may be caused by an intruder, incorrect software installation,
+    or failure to remove all files belonging to a deleted account.
+
+severity: medium
+
+ocil_clause: 'files and directories exist that are not owned by a valid user'
+
+ocil: |-
+    Run the following command to find files without a valid user:
+    <pre>$ sudo find / -xdev -nouser 2&gt;/dev/null</pre>
+    No files and directories without a valid user should be located.

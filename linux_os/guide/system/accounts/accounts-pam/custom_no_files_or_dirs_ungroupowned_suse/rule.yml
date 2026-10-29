@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Ensure All Files And Directories Are Owned by a Valid Group (Custom SUSE OVAL)'
+
+description: |-
+    If any files or directories are not group-owned by a valid defined group, the cause of the lack of
+    group-ownership must be investigated. This rule ensures all files belong to a valid system group defined in /etc/group.
+
+rationale: |-
+    Unowned files and directories do not directly imply a security problem, but they are generally a sign that
+    something is amiss.
+
+severity: medium
+
+ocil_clause: 'files and directories exist that are not owned by a valid group'
+
+ocil: |-
+    Run the following command to find files without a valid group:
+    <pre>$ sudo find / -xdev -nogroup 2&gt;/dev/null</pre>
+    No files and directories without a valid group should be located.

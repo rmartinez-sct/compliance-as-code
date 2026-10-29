@@ -1,0 +1,41 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure home directories have 0750 permissions or stricter.") }}}
+    <criteria>
+      <criterion test_ref="test_custom_home_dirs_perms_suse" />
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="at_least_one_exists" id="test_custom_home_dirs_perms_suse" version="1" comment="Check permissions">
+    <unix:object object_ref="obj_custom_home_dirs_perms_suse" />
+    <unix:state state_ref="state_custom_home_dirs_perms_suse" />
+  </unix:file_test>
+
+  <unix:file_object id="obj_custom_home_dirs_perms_suse" version="1">
+    <unix:filepath var_ref="var_custom_home_dirs_perms_suse" var_check="at least one" />
+    <filter action="exclude">state_custom_exclude_sys_dirs_perms_suse</filter>
+  </unix:file_object>
+
+  <unix:file_state id="state_custom_exclude_sys_dirs_perms_suse" version="1">
+    <unix:filepath operation="pattern match">^(/|/bin.*|/sbin.*|/usr.*|/dev.*|/nonexistent|/var.*|/run.*|/proc.*|/sys.*)$</unix:filepath>
+  </unix:file_state>
+
+  <!-- Replica exacto de bits 0027 de Ansible -->
+  <unix:file_state id="state_custom_home_dirs_perms_suse" version="1" operator="AND">
+    <unix:gwrite datatype="boolean">false</unix:gwrite>
+    <unix:oread datatype="boolean">false</unix:oread>
+    <unix:owrite datatype="boolean">false</unix:owrite>
+    <unix:oexec datatype="boolean">false</unix:oexec>
+  </unix:file_state>
+
+  <ind:textfilecontent54_object id="obj_custom_etc_passwd_homes_perms_suse" version="1">
+    <ind:filepath>/etc/passwd</ind:filepath>
+    <!-- Replica Ansible: UID >= 1 y Shell no contiene nologin ni false -->
+    <ind:pattern operation="pattern match">^[^:]+:[^:]+:[1-9][0-9]*:[^:]*:[^:]*:([^:]+):(?![^:]*(?:nologin|false)$)[^:]+$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <local_variable id="var_custom_home_dirs_perms_suse" datatype="string" version="1" comment="Directorios home legitimos">
+    <object_component object_ref="obj_custom_etc_passwd_homes_perms_suse" item_field="subexpression" />
+  </local_variable>
+</def-group>

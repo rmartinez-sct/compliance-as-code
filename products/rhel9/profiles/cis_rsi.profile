@@ -31,8 +31,10 @@ selections:
     #- banner_etc_issue_net
     - custom_banner_etc_issue_net
     - file_ownership_sshd_private_key
-    - file_groupownership_sshd_private_key
-    - file_permissions_sshd_private_key
+    #- file_groupownership_sshd_private_key
+    - custom_file_groupowner_sshd_private_key
+    #- file_permissions_sshd_private_key
+    - custom_file_permissions_sshd_private_key
 
     # Tareas programadas (Cron)
     - file_permissions_crontab
@@ -68,6 +70,7 @@ selections:
     - var_password_pam_ucredit=1
     - accounts_password_pam_enforce_root
     - accounts_maximum_age_login_defs
+    - accounts_password_set_max_life_existing
     - var_accounts_maximum_age_login_defs=90
     - accounts_password_all_shadowed
 
@@ -88,7 +91,8 @@ selections:
     #- custom_file_owner_var_log_recursive
     #- file_groupowner_var_log
     #- custom_file_groupowner_var_log_recursive
-    - custom_var_log_security_recursive
+    #- custom_var_log_security_recursive
+    - custom_var_log_security_non_recursive
 
     # Permisos Generales y Directorios Home
     #- no_files_or_dirs_ungroupowned

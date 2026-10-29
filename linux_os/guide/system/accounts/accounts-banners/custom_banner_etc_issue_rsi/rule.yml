@@ -1,0 +1,14 @@
+documentation_complete: true
+title: 'Modify the System Login Banner (Custom RSI)'
+description: |-
+    Configure the system login banner with the compliant RSI legal text.
+    This rule ensures the exact text is placed directly inside <tt>/etc/issue</tt>.
+rationale: |-
+    Display of a standardized and approved use notification before granting
+    access to the operating system ensures privacy and security compliance.
+severity: medium
+ocil_clause: 'it does not display the strictly required RSI banner'
+ocil: |-
+    To check if the system login banner is compliant, run the following command:
+    <pre>$ cat /etc/issue</pre>
+    It should display the exact RSI legal warning with no extra text.

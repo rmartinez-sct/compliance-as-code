@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Verify /etc/cron.allow Exists and Has Strict Permissions (Custom)'
+
+description: |-
+    The <tt>/etc/cron.allow</tt> file must explicitly exist to enforce strict access control to cron. 
+    It must have permissions <tt>0640</tt> or more restrictive, and be owned by root:root.
+
+rationale: |-
+    If the file does not exist, cron access control might fall back to default permissive behavior. 
+    Forcing the file to exist and restricting its permissions prevents unauthorized users from scheduling jobs.
+
+severity: medium
+
+ocil_clause: '/etc/cron.allow does not exist or has permissions less strict than 0640'
+
+ocil: |-
+    Verify that the file exists and has the correct permissions:
+    <pre>$ stat -c "%a %U:%G %n" /etc/cron.allow</pre>
+    It should exist and output <tt>640 root:root /etc/cron.allow</tt>.

@@ -1,10 +1,10 @@
 documentation_complete: true
 
-
-title: 'Verify permissions on System Login Banner for Remote Connections'
+title: 'Verify permissions and existence of System Login Banner for Remote Connections'
 
 description: |-
-    {{{ describe_file_permissions(file="/etc/issue.net", perms="0644") }}}
+    This rule checks that <tt>/etc/issue.net</tt> exists and has permissions set to 0644.
+    If the file does not exist, the remediation will create it and apply the correct permissions.
 
 rationale: |-
     Display of a standardized and approved use notification before granting
@@ -28,13 +28,9 @@ references:
     cis@sle12: 1.8.1.6
     cis@sle15: 1.8.1.6
 
-ocil_clause: '{{{ ocil_clause_file_permissions(file="/etc/issue.net", perms="-rw-r--r--") }}}'
+ocil_clause: 'the file does not exist or does not have 0644 permissions'
 
 ocil: |-
-    {{{ ocil_file_permissions(file="/etc/issue.net", perms="-rw-r--r--") }}}
-
-template:
-    name: file_permissions
-    vars:
-        filepath: /etc/issue.net
-        filemode: '0644'
+    To check the permissions of /etc/issue.net, run the command:
+    $ stat -c "%a" /etc/issue.net
+    It should return "644".

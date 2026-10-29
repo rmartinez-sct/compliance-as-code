@@ -1,0 +1,33 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure hidden files in user homes are not group or world writable") }}}
+    <criteria>
+      <criterion comment="Hidden files are not group or world writable" test_ref="test_{{{ rule_id }}}" />
+    </criteria>
+  </definition>
+
+  <!-- Buscar archivos que NO cumplan con la política segura -->
+  <unix:file_test id="test_{{{ rule_id }}}" check="all" check_existence="none_exist" version="1" comment="Find writable hidden files">
+    <unix:object object_ref="object_{{{ rule_id }}}"/>
+  </unix:file_test>
+
+  <unix:file_object id="object_{{{ rule_id }}}" version="1">
+    <unix:path var_ref="var_{{{ rule_id }}}_home_dirs" var_check="at least one"/>
+    <unix:filename operation="pattern match">^\..+$</unix:filename>
+    <filter action="exclude">state_{{{ rule_id }}}_safe_perms</filter>
+  </unix:file_object>
+
+  <!-- Estado seguro: Escritura de grupo y otros deben ser falsos -->
+  <unix:file_state id="state_{{{ rule_id }}}_safe_perms" operator="AND" version="1">
+    <unix:gwrite datatype="boolean">false</unix:gwrite>
+    <unix:owrite datatype="boolean">false</unix:owrite>
+  </unix:file_state>
+
+  <!-- Cargar los directorios home de los usuarios interactivos -->
+  {{%- set interactive_users_object = "object_" ~ rule_id ~ "_objects" -%}}
+  {{{ create_interactive_users_list_object(interactive_users_object, rule_id=rule_id) }}}
+
+  <local_variable id="var_{{{ rule_id }}}_home_dirs" datatype="string" version="1" comment="Home dirs">
+    <object_component item_field="home_dir" object_ref="{{{ interactive_users_object }}}"/>
+  </local_variable>
+</def-group>

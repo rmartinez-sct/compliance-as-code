@@ -1,10 +1,10 @@
 documentation_complete: true
 
-
-title: 'Verify ownership of System Login Banner for Remote Connections'
+title: 'Verify ownership and existence of System Login Banner for Remote Connections'
 
 description: |-
-    {{{ describe_file_owner(file="/etc/issue.net", owner="root") }}}
+    This rule checks that <tt>/etc/issue.net</tt> exists and is owned by the root user.
+    If the file does not exist, the remediation will create it and apply the correct ownership and permissions.
 
 rationale: |-
     Display of a standardized and approved use notification before granting
@@ -28,13 +28,9 @@ references:
     cis@sle12: 1.8.1.6
     cis@sle15: 1.8.1.6
 
-ocil_clause: '{{{ ocil_clause_file_owner(file="/etc/issue.net", owner="root") }}}'
+ocil_clause: 'the file does not exist or is not owned by root'
 
 ocil: |-
-    {{{ ocil_file_owner(file="/etc/issue.net", owner="root") }}}
-
-template:
-    name: file_owner
-    vars:
-        filepath: /etc/issue.net
-        uid_or_name: '0'
+    To check the ownership of /etc/issue.net, run the command:
+    $ stat -c "%U" /etc/issue.net
+    It should return "root".

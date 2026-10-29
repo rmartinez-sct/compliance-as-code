@@ -1,35 +1,24 @@
 <def-group>
   <definition class="compliance" id="custom_banner_etc_issue_net" version="1">
     <metadata>
-      <title>Check for RSI banner in /etc/issue.net</title>
+      <title>Check for exact RSI banner in /etc/issue.net</title>
       <affected family="unix">
         <platform>multi_platform_all</platform>
       </affected>
-      <description>Ensures the RSI banner is present in /etc/issue.net</description>
+      <description>Ensures the exact RSI banner is present in /etc/issue.net</description>
     </metadata>
-    <criteria operator="AND">
-      <criterion test_ref="test_custom_banner_rsi_p1" comment="Check paragraph 1"/>
-      <criterion test_ref="test_custom_banner_rsi_p2" comment="Check paragraph 2"/>
+    <criteria>
+      <criterion test_ref="test_custom_banner_rsi_exact" comment="Check exact banner content"/>
     </criteria>
   </definition>
 
-  <!-- Verificar primera frase clave -->
-  <ind:textfilecontent54_test id="test_custom_banner_rsi_p1" check="all" check_existence="all_exist" version="1" comment="P1 exists">
-    <ind:object object_ref="obj_custom_banner_rsi_p1"/>
+  <ind:textfilecontent54_test id="test_custom_banner_rsi_exact" check="all" check_existence="all_exist" version="1" comment="Check exact content">
+    <ind:object object_ref="obj_custom_banner_rsi_exact"/>
   </ind:textfilecontent54_test>
-  <ind:textfilecontent54_object id="obj_custom_banner_rsi_p1" version="1">
-    <ind:filepath>/etc/issue.net</ind:filepath>
-    <ind:pattern operation="pattern match">Está terminantemente prohibido el acceso no autorizado a este sistema</ind:pattern>
-    <ind:instance datatype="int">1</ind:instance>
-  </ind:textfilecontent54_object>
 
-  <!-- Verificar segunda frase clave -->
-  <ind:textfilecontent54_test id="test_custom_banner_rsi_p2" check="all" check_existence="all_exist" version="1" comment="P2 exists">
-    <ind:object object_ref="obj_custom_banner_rsi_p2"/>
-  </ind:textfilecontent54_test>
-  <ind:textfilecontent54_object id="obj_custom_banner_rsi_p2" version="1">
+  <ind:textfilecontent54_object id="obj_custom_banner_rsi_exact" version="1">
     <ind:filepath>/etc/issue.net</ind:filepath>
-    <ind:pattern operation="pattern match">La INFORMACION contenida en este servidor puede tener caracter CONFIDENCIAL</ind:pattern>
+    <ind:pattern operation="pattern match">^\s*Está terminantemente prohibido el acceso no autorizado a este sistema así como el uso indebido del mismo, conforme a la normativa de la compañía y la legislación vigente\. Si entra en el sistema, admite conocer las políticas de seguridad de la compañía y da el consentimiento para que sus actividades sean monitorizadas\.\s*\n\s*La INFORMACION contenida en este servidor puede tener caracter CONFIDENCIAL o RESTRINGIDO según las políticas de seguridad de RSI, por lo que deberá CONOCER y APLICAR las medidas de seguridad correspondientes\.\s*$</ind:pattern>
     <ind:instance datatype="int">1</ind:instance>
   </ind:textfilecontent54_object>
 </def-group>

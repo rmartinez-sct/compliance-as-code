@@ -1,0 +1,38 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure all files and directories are owned by a valid user defined in /etc/passwd.") }}}
+    <criteria>
+      <criterion comment="Check that all files belong to a valid user from /etc/passwd" test_ref="test_custom_no_files_or_dirs_unowned_suse" />
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="at_least_one_exists" comment="Verify all files have a valid user" id="test_custom_no_files_or_dirs_unowned_suse" version="1">
+    <unix:object object_ref="obj_custom_no_files_unowned_suse" />
+    <unix:state state_ref="state_custom_file_has_valid_uid_suse" />
+  </unix:file_test>
+
+  <unix:file_object id="obj_custom_no_files_unowned_suse" version="1">
+    <unix:behaviors recurse="directories" recurse_direction="down" max_depth="-1" recurse_file_system="local" />
+    <unix:path>/</unix:path>
+    <unix:filename operation="pattern match">.*</unix:filename>
+    <filter action="exclude">state_custom_unowned_exclude_dirs_suse</filter>
+  </unix:file_object>
+
+  <unix:file_state id="state_custom_unowned_exclude_dirs_suse" version="1">
+    <unix:filepath operation="pattern match">^/(dev|proc|sys|run)(/.*)?$</unix:filepath>
+  </unix:file_state>
+
+  <unix:file_state id="state_custom_file_has_valid_uid_suse" version="1">
+    <unix:user_id datatype="int" var_check="at least one" var_ref="var_custom_valid_uids_suse" operation="equals" />
+  </unix:file_state>
+
+  <ind:textfilecontent54_object id="obj_custom_etc_passwd_uids_suse" version="1">
+    <ind:filepath>/etc/passwd</ind:filepath>
+    <ind:pattern operation="pattern match">^[^:]+:[^:]*:(\d+):</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <local_variable id="var_custom_valid_uids_suse" datatype="int" version="1" comment="Lista de UIDs validos en /etc/passwd">
+    <object_component object_ref="obj_custom_etc_passwd_uids_suse" item_field="subexpression" />
+  </local_variable>
+</def-group>

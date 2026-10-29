@@ -14,6 +14,6 @@ template:
     filepath: /var/log/
     file_regex: ^(secure.*|btmp.*|wtmp.*|tallylog.*|lastlog.*|audit/.*|sssd/.*)$
     allow_stricter_permissions: true
-    filemode: '0600'
+    filemode: '0640'
   backends:
     bash: "off"

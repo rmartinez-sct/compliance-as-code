@@ -1,0 +1,16 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure all xorg-x11-server packages are removed") }}}
+    <criteria>
+      <criterion comment="No xorg-x11-server packages are installed" test_ref="test_custom_xorg_removed" />
+    </criteria>
+  </definition>
+
+  <linux:rpminfo_test check="all" check_existence="none_exist" id="test_custom_xorg_removed" version="1" comment="Check if any xorg-x11-server package is installed">
+    <linux:object object_ref="obj_custom_xorg_removed" />
+  </linux:rpminfo_test>
+
+  <linux:rpminfo_object id="obj_custom_xorg_removed" version="1">
+    <linux:name operation="pattern match">^xorg-x11-server.*</linux:name>
+  </linux:rpminfo_object>
+</def-group>

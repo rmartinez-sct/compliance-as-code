@@ -1,0 +1,22 @@
+documentation_complete: true
+
+title: 'Uninstall All X Windows Server Packages (Custom)'
+
+description: |-
+    The X Windows system provides a Graphical User Interface (GUI). 
+    To ensure no X11 server components are installed, all packages matching 
+    <tt>xorg-x11-server*</tt> must be removed from the system.
+
+rationale: |-
+    Unnecessary services and packages, especially graphical interfaces, increase 
+    the attack surface of a server. Servers should be managed via command line 
+    to maintain a secure posture.
+
+severity: medium
+
+ocil_clause: 'any xorg-x11-server package is installed'
+
+ocil: |-
+    To verify that no X Windows server packages are installed, run the following command:
+    <pre>$ rpm -qa | grep "^xorg-x11-server"</pre>
+    The output should be completely empty.

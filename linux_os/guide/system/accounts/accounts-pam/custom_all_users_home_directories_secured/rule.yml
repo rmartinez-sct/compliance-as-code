@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Ensure All Users Home Directories Exist, Have Correct Ownership and Permissions'
+
+description: |-
+    This custom rule uses an SCE script to iterate through all users in <tt>/etc/passwd</tt> 
+    (except root). It verifies that the assigned home directory exists, is owned by the user 
+    and their primary group, and has restrictive permissions (0750 or stricter).
+    Critical system paths (/, /bin, /dev/null, etc.) are safely ignored to prevent system breakage.
+
+rationale: |-
+    Ensuring home directories exist and are properly secured prevents privilege escalation 
+    and unauthorized access to user-specific files.
+
+severity: medium
+
+ocil_clause: 'a home directory is missing, has incorrect ownership, or permissive rights'
+
+ocil: |-
+    The SCE check will automatically audit every user in /etc/passwd except root.

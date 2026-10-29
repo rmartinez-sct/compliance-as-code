@@ -1,0 +1,5 @@
+documentation_complete: true
+title: 'Ensure All Non-Root Users Home Directories Have Correct Ownership'
+description: 'Home directories must be owned by their respective non-root user.'
+rationale: 'Incorrect ownership can allow unauthorized modification of user files.'
+severity: medium

@@ -1,0 +1,29 @@
+documentation_complete: true
+
+title: 'Set Deny For Failed Password Attempts (Custom SUSE)'
+
+description: |-
+    The operating system must lock an account after - at most - {{{ xccdf_value("var_password_pam_tally2") }}}
+    consecutive invalid access attempts.
+
+rationale: |-
+    By limiting the number of failed logon attempts, the risk of unauthorized
+    system access via user password guessing, otherwise known as brute-force
+    attacks, is reduced. Limits are imposed by locking the account.
+
+severity: medium
+
+ocil_clause: 'the account option is missing or commented out'
+
+ocil: |-
+    Check that the systems locks a user account after - at most - <tt>{{{ xccdf_value("var_password_pam_tally2") }}}</tt>
+    consecutive failed login attempts with the following command:
+
+    <pre># grep -E '^\s*auth\s+\S+\s+pam_(tally2|unix)\.so' /etc/pam.d/login
+    auth required pam_tally2.so onerr=fail deny={{{ xccdf_value("var_password_pam_tally2") }}}</pre>
+
+    Check that the system resets the failed login attempts counter after a
+    successful login using the following command:
+
+    <pre># grep pam_tally2.so /etc/pam.d/common-account
+    account required pam_tally2.so deny={{{ xccdf_value("var_password_pam_tally2") }}}</pre>

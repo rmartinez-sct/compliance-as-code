@@ -1,0 +1,5 @@
+documentation_complete: true
+title: 'Ensure All Non-Root Users Home Directories Exist'
+description: 'All users defined in /etc/passwd (except root) must have a home directory.'
+rationale: 'Home directories are required for users to store user-specific configuration files.'
+severity: medium

@@ -1,0 +1,38 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("The system sshd key has the 0600 permission") }}}
+    <criteria operator="AND">
+      <criterion comment="No keys that have unsafe permissions exist" test_ref="test_custom_no_offending_ssh_keys" />
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="none_exist" comment="No keys that have unsafe permissions exist" id="test_custom_no_offending_ssh_keys" version="1">
+    <unix:object object_ref="object_custom_offending_ssh_keys" />
+  </unix:file_test>
+
+  <unix:file_object comment="All keys in /etc/ssh/ with unsafe permissions" id="object_custom_offending_ssh_keys" version="1">
+      <unix:path>/etc/ssh</unix:path>
+      <unix:filename operation="pattern match">.*_key$</unix:filename>
+      <filter action="exclude">exclude_custom_symlinks__sshd_private_key</filter>
+      <filter action="exclude">filter_custom_ssh_key_permissions_0600</filter>
+  </unix:file_object>
+
+  <unix:file_state id="exclude_custom_symlinks__sshd_private_key" version="1">
+      <unix:type operation="equals">symbolic link</unix:type>
+  </unix:file_state>
+
+  <unix:file_state comment="All keys in /etc/ssh have 0600 permissions" id="filter_custom_ssh_key_permissions_0600" version="1">
+      <unix:path>/etc/ssh</unix:path>
+      <unix:filename operation="pattern match">.*_key$</unix:filename>
+      <unix:suid datatype="boolean">false</unix:suid>
+      <unix:sgid datatype="boolean">false</unix:sgid>
+      <unix:sticky datatype="boolean">false</unix:sticky>
+      <unix:uexec datatype="boolean">false</unix:uexec>
+      <unix:gread datatype="boolean">false</unix:gread>
+      <unix:gwrite datatype="boolean">false</unix:gwrite>
+      <unix:gexec datatype="boolean">false</unix:gexec>
+      <unix:oread datatype="boolean">false</unix:oread>
+      <unix:owrite datatype="boolean">false</unix:owrite>
+      <unix:oexec datatype="boolean">false</unix:oexec>
+  </unix:file_state>
+</def-group>

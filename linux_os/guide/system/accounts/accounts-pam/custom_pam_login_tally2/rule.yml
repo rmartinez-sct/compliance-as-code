@@ -1,0 +1,21 @@
+documentation_complete: true
+
+title: 'Configure pam_tally2 and pam_unix in /etc/pam.d/login'
+
+description: |-
+    To ensure lockout for failed password attempts is configured correctly, the following lines must 
+    exist in <tt>/etc/pam.d/login</tt>:
+    <pre>auth required pam_tally2.so deny=5 onerr=fail unlock_time=900</pre>
+    <pre>auth required pam_unix.so nullok try_first_pass</pre>
+
+rationale: |-
+    Locking out accounts after a number of incorrect attempts prevents brute-force 
+    password guessing attacks, and required unix auth enforces strict validation.
+
+severity: high
+
+ocil_clause: 'pam_tally2 or pam_unix is not configured correctly in login'
+
+ocil: |-
+    Check the configuration in /etc/pam.d/login:
+    <pre>$ grep -E "pam_tally2.so|pam_unix.so" /etc/pam.d/login</pre>

@@ -1,0 +1,19 @@
+documentation_complete: true
+
+title: 'Permisos para logs de aplicaciones y servicios en SUSE (Apps)'
+
+description: 'Garantizar permisos adecuados en logs de aplicaciones específicas como zypper en sistemas SUSE.'
+
+rationale: 'Los servicios deben tener sus logs protegidos contra lectura no autorizada.'
+
+severity: medium
+
+template:
+  name: file_permissions
+  vars:
+    filepath: /var/log/
+    file_regex: ^(chrony/.*|cups/.*|httpd/.*|samba/.*|nginx/.*|zypper.*|hawkey.*|tuned/.*|rhsm/.*|qemu-ga/.*)$
+    allow_stricter_permissions: true
+    filemode: '0640'
+  backends:
+    bash: "off"

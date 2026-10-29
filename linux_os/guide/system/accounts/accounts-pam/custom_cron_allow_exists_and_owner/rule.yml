@@ -1,0 +1,21 @@
+documentation_complete: true
+
+title: 'Verify /etc/cron.allow Exists and is Owned by root (Custom)'
+
+description: |-
+    The <tt>/etc/cron.allow</tt> file must explicitly exist to enforce strict access control to cron. 
+    It must be owned by the <tt>root</tt> user.
+
+rationale: |-
+    If the owner of the cron.allow file is not set to root, the possibility exists for an
+    unauthorized user to view or edit sensitive information. Forcing the file to exist prevents 
+    cron from falling back to permissive defaults.
+
+severity: medium
+
+ocil_clause: '/etc/cron.allow does not exist or is not owned by root'
+
+ocil: |-
+    Verify that the file exists and is owned by root:
+    <pre>$ stat -c "%U %n" /etc/cron.allow</pre>
+    It should output <tt>root /etc/cron.allow</tt>.

@@ -1,0 +1,30 @@
+documentation_complete: true
+
+title: 'Use Only Approved Strong Key Exchange Algorithms (Custom)'
+
+description: |-
+    To ensure secure cryptographic key exchange, configure the SSH daemon to only use
+    approved strong key exchange algorithms.
+    Edit the <tt>/etc/ssh/sshd_config</tt> file and add/modify the <tt>KexAlgorithms</tt> line to contain exactly:
+    <pre>KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256</pre>
+
+rationale: |-
+    Using weak key exchange algorithms can lead to vulnerabilities in the SSH connection.
+    Enforcing a strict list of strong algorithms protects against these attacks and complies with site policies.
+
+severity: medium
+
+ocil_clause: 'the KexAlgorithms are not set to the exact approved list'
+
+ocil: |-
+    Verify the SSH daemon is configured to use only approved KexAlgorithms:
+    <pre>$ sudo sshd -T | grep kexalgorithms</pre>
+    It should return exactly the required list.
+
+template:
+    name: sshd_lineinfile
+    vars:
+        missing_parameter_pass: 'false'
+        datatype: string
+        parameter: KexAlgorithms
+        value: 'curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256'

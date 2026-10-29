@@ -1,0 +1,39 @@
+documentation_complete: true
+
+title: 'Disable SSH Support for RSA Authentication (SSHv1)'
+
+description: |-
+    SSHv1 allows authentication using RSA. This protocol is obsolete and considered insecure.
+    <br /><br />
+    To ensure this behavior is disabled, add or correct the
+    following line in <tt>/etc/ssh/sshd_config</tt>:
+    <pre>RSAAuthentication no</pre>
+
+rationale: |-
+    Configuring this setting for the SSH daemon provides additional
+    assurance that vulnerable SSHv1 authentication methods are not used 
+    to access the system.
+
+severity: medium
+
+ocil_clause: 'the SSH daemon is configured to allow RSAAuthentication'
+
+ocil: |-
+    To check if RSAAuthentication is disabled, run the following command:
+    <pre>$ grep -i "^RSAAuthentication" /etc/ssh/sshd_config</pre>
+    The output should precisely be:
+    <pre>RSAAuthentication no</pre>
+
+warnings:
+    - general: |-
+        As of <tt>openssh-server</tt> version <tt>7.4</tt> and above,
+        the <tt>RSAAuthentication</tt> option has been deprecated, and the line
+        <pre>RSAAuthentication no</pre> in <tt>/etc/ssh/sshd_config</tt> is not
+        necessary and may cause the SSH daemon to fail to start if explicitly set.
+
+template:
+    name: sshd_lineinfile
+    vars:
+        parameter: RSAAuthentication
+        value: "no"
+        datatype: string

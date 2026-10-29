@@ -1,0 +1,32 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Verify that /etc/issue.net exists and has 0644 permissions.") }}}
+    <criteria>
+      <criterion comment="Check if /etc/issue.net exists and has 0644 permissions" test_ref="test_etc_issue_net_perms_exist_rule5" />
+    </criteria>
+  </definition>
+
+  <unix:file_test check="all" check_existence="all_exist" comment="/etc/issue.net exists and has 0644 permissions" id="test_etc_issue_net_perms_exist_rule5" version="1">
+    <unix:object object_ref="obj_etc_issue_net_perms_exist_rule5" />
+    <unix:state state_ref="state_etc_issue_net_perms_exist_rule5" />
+  </unix:file_test>
+
+  <unix:file_object id="obj_etc_issue_net_perms_exist_rule5" version="1">
+    <unix:filepath>/etc/issue.net</unix:filepath>
+  </unix:file_object>
+
+  <unix:file_state id="state_etc_issue_net_perms_exist_rule5" version="1">
+    <unix:suid datatype="boolean">false</unix:suid>
+    <unix:sgid datatype="boolean">false</unix:sgid>
+    <unix:sticky datatype="boolean">false</unix:sticky>
+    <unix:uread datatype="boolean">true</unix:uread>
+    <unix:uwrite datatype="boolean">true</unix:uwrite>
+    <unix:uexec datatype="boolean">false</unix:uexec>
+    <unix:gread datatype="boolean">true</unix:gread>
+    <unix:gwrite datatype="boolean">false</unix:gwrite>
+    <unix:gexec datatype="boolean">false</unix:gexec>
+    <unix:oread datatype="boolean">true</unix:oread>
+    <unix:owrite datatype="boolean">false</unix:owrite>
+    <unix:oexec datatype="boolean">false</unix:oexec>
+  </unix:file_state>
+</def-group>

@@ -1,0 +1,44 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure all files and directories are owned by a valid group defined in /etc/group.") }}}
+    <criteria>
+      <criterion comment="Check that all files belong to a valid group from /etc/group" test_ref="test_custom_no_files_or_dirs_ungroupowned_suse" />
+    </criteria>
+  </definition>
+
+  <!-- 1. Test: exige que todos los archivos pertenezcan a un GID válido -->
+  <unix:file_test check="all" check_existence="at_least_one_exists" comment="Verify all files have a valid group" id="test_custom_no_files_or_dirs_ungroupowned_suse" version="1">
+    <unix:object object_ref="obj_custom_no_files_ungroupowned_suse" />
+    <unix:state state_ref="state_custom_file_has_valid_gid_suse" />
+  </unix:file_test>
+
+  <!-- 2. Objeto: escanea el sistema excluyendo sistemas de archivos virtuales -->
+  <unix:file_object id="obj_custom_no_files_ungroupowned_suse" version="1">
+    <unix:behaviors recurse="directories" recurse_direction="down" max_depth="-1" recurse_file_system="local" />
+    <unix:path>/</unix:path>
+    <unix:filename operation="pattern match">.*</unix:filename>
+    <filter action="exclude">state_custom_ungroupowned_exclude_dirs_suse</filter>
+  </unix:file_object>
+
+  <!-- Exclusión de pseudofs y carpetas virtuales para evitar bloqueos del escáner -->
+  <unix:file_state id="state_custom_ungroupowned_exclude_dirs_suse" version="1">
+    <unix:filepath operation="pattern match">^/(dev|proc|sys|run)(/.*)?$</unix:filepath>
+  </unix:file_state>
+
+  <!-- 3. Estado: el group_id del archivo debe coincidir con al menos un GID de /etc/group -->
+  <unix:file_state id="state_custom_file_has_valid_gid_suse" version="1">
+    <unix:group_id datatype="int" var_check="at least one" var_ref="var_custom_valid_gids_suse" operation="equals" />
+  </unix:file_state>
+
+  <!-- 4. Extracción de todos los GIDs del sistema desde /etc/group -->
+  <ind:textfilecontent54_object id="obj_custom_etc_group_gids_suse" version="1">
+    <ind:filepath>/etc/group</ind:filepath>
+    <ind:pattern operation="pattern match">^[^:]+:[^:]+:(\d+):</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <!-- Variable local que almacena la lista de GIDs válidos -->
+  <local_variable id="var_custom_valid_gids_suse" datatype="int" version="1" comment="Lista de GIDs válidos en /etc/group">
+    <object_component object_ref="obj_custom_etc_group_gids_suse" item_field="subexpression" />
+  </local_variable>
+</def-group>

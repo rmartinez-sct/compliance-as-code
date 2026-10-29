@@ -1,0 +1,18 @@
+documentation_complete: true
+
+title: 'Verify Permissions of All Logs in /var/log for SUSE 15'
+
+description: |-
+    This custom rule recursively checks all files in <tt>/var/log</tt> to ensure 
+    they have 0640 permissions (or stricter) to prevent unauthorized access.
+
+rationale: |-
+    Log files contain sensitive information. A dynamic check prevents unauthorized access.
+
+severity: high
+
+ocil_clause: 'any file in /var/log has incorrect permissions'
+
+ocil: |-
+    Run the following command to find files with permissions less strict than 0640:
+    <pre>$ sudo find /var/log -type f ! -perm /u=r,u=w,g=r,o= -ls</pre>

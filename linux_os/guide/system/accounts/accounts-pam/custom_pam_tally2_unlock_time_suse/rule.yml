@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Ensure pam_tally2 unlock_time is configured (Custom SUSE)'
+
+description: |-
+    To ensure lockout for failed password attempts is released after a specific time, 
+    <tt>pam_tally2.so</tt> must be configured with the <tt>unlock_time</tt> parameter in <tt>/etc/pam.d/login</tt>.
+
+rationale: |-
+    Locking out accounts after a number of incorrect attempts prevents brute-force 
+    password guessing attacks. The unlock_time parameter ensures administrators or users 
+    can regain access after a cool-down period.
+
+severity: medium
+
+ocil_clause: 'unlock_time is not configured correctly for pam_tally2'
+
+ocil: |-
+    Check the configuration in /etc/pam.d/login:
+    <pre>$ grep "pam_tally2.so.*unlock_time=" /etc/pam.d/login</pre>

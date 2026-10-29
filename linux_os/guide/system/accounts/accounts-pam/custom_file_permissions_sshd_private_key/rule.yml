@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Verify Permissions on SSH Server Private *_key Key Files (Permissions Only - 0600)'
+
+description: |-
+    SSH server private keys - files that match the <code>/etc/ssh/*_key</code> glob, have to have restricted permissions.
+    These files must have the <code>0600</code> permission or stricter to prevent unauthorized access.
+
+rationale: |-
+    If an unauthorized user obtains the private SSH host key file, the host could be
+    impersonated. Enforcing 0600 permissions guarantees that only the owner can read or write to these files.
+
+severity: medium
+
+ocil_clause: 'any file in /etc/ssh/*_key has permissions less strict than 0600'
+
+ocil: |-
+    Verify that all private SSH host key files have 0600 permissions:
+      <pre>$ stat -c "%a %n" /etc/ssh/*_key</pre>
+    The output should show 600 for all matching files.

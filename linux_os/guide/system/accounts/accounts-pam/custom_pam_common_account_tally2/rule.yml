@@ -1,0 +1,19 @@
+documentation_complete: true
+
+title: 'Configure pam_tally2 in /etc/pam.d/common-account'
+
+description: |-
+    To ensure lockout for failed password attempts is configured, the following line must 
+    exist in <tt>/etc/pam.d/common-account</tt>:
+    <pre>account required pam_tally2.so</pre>
+
+rationale: |-
+    The account phase of PAM is required to actually deny access to locked out accounts.
+
+severity: high
+
+ocil_clause: 'pam_tally2 account is not configured'
+
+ocil: |-
+    Check the configuration in /etc/pam.d/common-account:
+    <pre>$ grep "^account.*pam_tally2.so" /etc/pam.d/common-account</pre>

@@ -1,0 +1,20 @@
+documentation_complete: true
+
+title: 'Verify Permissions, Owner and Group of Logs in /var/log (Non-Recursive)'
+
+description: |-
+    This custom rule uses an advanced SCE script to check files directly in 
+    <tt>/var/log</tt> (without entering subdirectories). It reads <tt>UID_MIN</tt> 
+    and applies specific security limits for wtmp, secure, sssd, journals, and generic logs.
+
+rationale: |-
+    Log files contain sensitive information. A dynamic, context-aware script ensures 
+    system services can write to their logs while preventing unauthorized access.
+
+severity: high
+
+ocil_clause: 'any file directly in /var/log has incorrect permissions, owner, or group'
+
+ocil: |-
+    The SCE check will automatically audit every file in the root of /var/log. 
+    If a violation is found, it will output the exact file and expected ownership/permissions.

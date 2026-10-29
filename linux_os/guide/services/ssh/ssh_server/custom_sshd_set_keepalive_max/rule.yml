@@ -1,0 +1,35 @@
+documentation_complete: true
+
+title: 'Set SSH Client Alive Count Max (Custom)'
+
+description: |-
+    SSH allows administrators to set a maximum number of client alive messages
+    sent without any messages received back from the client. If this threshold
+    is reached, the SSH daemon will disconnect the client.
+    <br /><br />
+    To set this value, edit the following line in <tt>/etc/ssh/sshd_config</tt> as
+    follows:
+    <pre>ClientAliveCountMax <b>{{{ xccdf_value("var_sshd_set_keepalive") }}}</b></pre>
+
+rationale: |-
+    Terminating an idle SSH session reduces the window of opportunity for unauthorized
+    personnel to take control of a management session left unattended. Setting
+    ClientAliveCountMax ensures that dead connections are properly closed.
+
+severity: medium
+
+ocil_clause: 'it is commented out or not configured properly'
+
+ocil: |-
+    Run the following command to see what the maximum count is:
+    <pre>$ sudo grep ClientAliveCountMax /etc/ssh/sshd_config</pre>
+    If properly configured, the output should be:
+    <pre>ClientAliveCountMax {{{ xccdf_value("var_sshd_set_keepalive") }}}</pre>
+
+template:
+    name: sshd_lineinfile
+    vars:
+        parameter: ClientAliveCountMax
+        xccdf_variable: var_sshd_set_keepalive
+        datatype: int
+        missing_parameter_pass: 'false'
