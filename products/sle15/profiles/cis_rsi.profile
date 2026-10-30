@@ -38,7 +38,8 @@ selections:
     - coredump_disable_storage
     - coredump_disable_backtraces
     - bios_enable_execution_restrictions
-    - grub2_enable_apparmor
+    #- grub2_enable_apparmor
+    - custom_grub2_enable_apparmor
     #- banner_etc_issue
     - custom_banner_etc_issue_rsi
     - custom_banner_etc_issue_net

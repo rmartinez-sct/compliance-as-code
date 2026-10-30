@@ -227,5 +227,10 @@ rules:
 - custom_home_directory_exists_suse
 - custom_file_permissions_home_directories_750_suse
 - custom_file_ownership_home_directories_suse
+- custom_sshd_set_keepalive_max
+- custom_grub2_enable_apparmor
+- custom_var_log_permissions
+- custom_sshd_use_strong_kex
+- custom_ensure_gpgcheck_zypper
 templates:
 - pam_options

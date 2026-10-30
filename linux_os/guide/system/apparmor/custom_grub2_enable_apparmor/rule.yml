@@ -1,0 +1,15 @@
+documentation_complete: true
+
+title: 'Ensure AppArmor is enabled in the bootloader configuration (Custom)'
+
+description: |-
+    Configure AppArmor to be enabled at boot time and verify that it has not been
+    overwritten by the bootloader boot parameters.
+    <br/>
+    This enforces <tt>apparmor=1</tt> and <tt>security=apparmor</tt>.
+
+rationale: |-
+    AppArmor must be enabled at boot time in your bootloader configuration to
+    ensure that the controls it provides are not overridden.
+
+severity: medium
