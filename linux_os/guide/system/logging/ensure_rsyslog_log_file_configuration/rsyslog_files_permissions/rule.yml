@@ -26,12 +26,12 @@ identifiers:
     cce@rhel9: CCE-83689-0
     cce@rhel10: CCE-89058-2
     cce@sle12: CCE-91510-8
-    cce@sle15: CCE-85837-3
+    cce@: CCE-85837-3
     cce@sle16: CCE-95840-5
 
 references:
     cis@sle12: 4.2.1.3
-    cis@sle15: 4.2.1.3
+    cis@: 4.2.1.3
     nerc-cip: CIP-003-8 R5.1.1,CIP-003-8 R5.3,CIP-004-6 R2.3,CIP-007-3 R2.1,CIP-007-3 R2.2,CIP-007-3 R2.3,CIP-007-3 R5.1,CIP-007-3 R5.1.1,CIP-007-3 R5.1.2
     nist: CM-6(a),AC-6(1)
     pcidss: Req-10.5.1,Req-10.5.2

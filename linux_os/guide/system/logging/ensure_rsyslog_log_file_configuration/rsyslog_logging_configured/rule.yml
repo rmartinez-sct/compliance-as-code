@@ -17,11 +17,11 @@ severity: medium
 
 identifiers:
     cce@sle12: CCE-92379-7
-    cce@sle15: CCE-92497-7
+    cce@: CCE-92497-7
 
 references:
     cis@sle12: 4.2.1.4
-    cis@sle15: 4.2.1.4
+    cis@: 4.2.1.4
 
 ocil_clause: 'no logging is configured'
 

@@ -232,5 +232,7 @@ rules:
 - custom_var_log_permissions
 - custom_sshd_use_strong_kex
 - custom_ensure_gpgcheck_zypper
+- custom_sshd_set_idle_timeout
+- custom_no_files_or_dirs_ungroupowned_unowned_suse
 templates:
 - pam_options

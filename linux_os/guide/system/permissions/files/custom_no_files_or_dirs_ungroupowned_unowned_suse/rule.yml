@@ -1,0 +1,24 @@
+documentation_complete: true
+
+title: 'Ensure No Files or Directories Are Unowned or Ungrouped (SUSE)'
+
+description: |-
+    All files and directories on local file systems must belong to a user
+    and a group that the system can resolve. Accounts that exist only in the
+    directory service (not in <tt>/etc/passwd</tt> or <tt>/etc/group</tt>)
+    are excluded from the check by ID: values at or above a configured
+    threshold, plus a short list of individual IDs. Any file or directory
+    returned by <tt>find -nouser -o -nogroup</tt> must be reassigned to
+    <tt>root:root</tt>.
+
+rationale: |-
+    A file or directory whose owner or group no longer exists can be taken
+    over by a new account that reuses the orphaned UID or GID.
+
+severity: medium
+
+ocil_clause: 'any file or directory has no valid owner or group'
+
+ocil: |-
+    Run the following command. It must return no output:
+    <pre>$ df --local --output=target | tail -n +2 | while IFS= read -r p; do find "$p" -xdev \( -nouser -o -nogroup \); done</pre>

@@ -1,5 +1,25 @@
 documentation_complete: true
+
 title: 'Ensure All Non-Root Users Home Directories Have 0750 Permissions'
-description: 'Home directories must have permissions of 0750 or stricter.'
-rationale: 'Permissive rights allow unauthorized users to view or modify files.'
+
+description: |-
+    The home directory of every local user with a UID other than 0 and an
+    interactive shell (not <tt>nologin</tt> or <tt>false</tt>) must have
+    permissions of <tt>0750</tt> or stricter: no write access for the group
+    and no access at all for others. No path is excluded. Every directory
+    located directly under <tt>/home</tt> is also checked, including those of
+    users that exist only in the directory service and not in
+    <tt>/etc/passwd</tt>.
+
+rationale: |-
+    Permissive rights on a home directory allow unauthorized users to view
+    or modify the files of its owner.
+
 severity: medium
+
+ocil_clause: 'any home directory is writable by the group or accessible by others'
+
+ocil: |-
+    Run the following commands. Any directory they print is too permissive:
+    <pre>$ for d in $(awk -F: '$3 != 0' /etc/passwd | awk -F: '$7 !~ /(nologin|false)$/ { print $6 }'); do find "$d" -maxdepth 0 -perm /027 2>/dev/null; done</pre>
+    <pre>$ find /home -mindepth 1 -maxdepth 1 -type d -perm /027</pre>

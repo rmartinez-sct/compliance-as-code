@@ -1,29 +1,61 @@
 <def-group>
-  <definition class="compliance" id="{{{ rule_id }}}" version="1">
-    {{{ oval_metadata("Ensure all logs in /var/log have 0640 permissions or stricter.") }}}
-    <criteria>
-      <criterion comment="Check /var/log permissions recursively" test_ref="test_custom_var_log_security_recursive_suse" />
+  <definition class="compliance" id="custom_var_log_security_recursive_suse" version="1">
+    {{{ oval_metadata("Ensure all items directly in /var/log have restricted permissions (max 750 for dirs, 640 for files).") }}}
+    <criteria operator="AND">
+      <criterion comment="Check files in /var/log" test_ref="test_custom_var_log_files" />
+      <criterion comment="Check directories in /var/log" test_ref="test_custom_var_log_dirs" />
     </criteria>
   </definition>
 
-  <unix:file_test check="all" check_existence="any_exist" comment="All files in /var/log have max 0640 permissions" id="test_custom_var_log_security_recursive_suse" version="1">
-    <unix:object object_ref="obj_custom_var_log_security_recursive_suse" />
-    <unix:state state_ref="state_custom_var_log_security_recursive_suse" />
+  <!-- ================= COMPROBACIÓN: FICHEROS (Máximo 640) ================= -->
+  <unix:file_test check="all" check_existence="any_exist" comment="Files in /var/log max 640" id="test_custom_var_log_files" version="1">
+    <unix:object object_ref="obj_custom_var_log_files" />
+    <unix:state state_ref="state_custom_var_log_files" />
   </unix:file_test>
 
-  <unix:file_object id="obj_custom_var_log_security_recursive_suse" version="1">
-    <unix:behaviors recurse="directories" recurse_direction="down" max_depth="-1" recurse_file_system="local" />
-    <unix:path>/var/log</unix:path>
-    <unix:filename operation="pattern match">.*</unix:filename>
+  <unix:file_object id="obj_custom_var_log_files" version="1">
+    <unix:filepath operation="pattern match">^/var/log/[^/]+$</unix:filepath>
+    <filter action="include">state_custom_var_log_is_file</filter>
   </unix:file_object>
 
-  <unix:file_state id="state_custom_var_log_security_recursive_suse" version="1" operator="AND">
-    <unix:suid datatype="boolean">false</unix:suid>
-    <unix:sgid datatype="boolean">false</unix:sgid>
-    <unix:sticky datatype="boolean">false</unix:sticky>
+  <unix:file_state id="state_custom_var_log_is_file" version="1">
+    <unix:type operation="equals">regular</unix:type>
+  </unix:file_state>
+
+  <unix:file_state id="state_custom_var_log_files" version="1" operator="AND">
     <unix:uexec datatype="boolean">false</unix:uexec>
     <unix:gwrite datatype="boolean">false</unix:gwrite>
     <unix:gexec datatype="boolean">false</unix:gexec>
+    <unix:oread datatype="boolean">false</unix:oread>
+    <unix:owrite datatype="boolean">false</unix:owrite>
+    <unix:oexec datatype="boolean">false</unix:oexec>
+  </unix:file_state>
+
+  <!-- ================= COMPROBACIÓN: DIRECTORIOS (Máximo 750) ================= -->
+  <!--
+       Los directorios NO se pueden recoger con unix:filepath (la sonda solo devuelve
+       ficheros). Hay que usar un objeto "solo path" (filename nil) con behaviors.
+       max_depth="1" devuelve /var/log (profundidad 0) y sus subdirectorios directos,
+       por eso se excluye /var/log con un filter.
+  -->
+  <unix:file_test check="all" check_existence="any_exist" comment="Directories in /var/log max 750" id="test_custom_var_log_dirs" version="1">
+    <unix:object object_ref="obj_custom_var_log_dirs" />
+    <unix:state state_ref="state_custom_var_log_dirs" />
+  </unix:file_test>
+
+  <unix:file_object id="obj_custom_var_log_dirs" version="1">
+    <unix:behaviors recurse="directories" recurse_direction="down" max_depth="1" />
+    <unix:path operation="equals">/var/log</unix:path>
+    <unix:filename xsi:nil="true" />
+    <filter action="exclude">state_custom_var_log_root_dir</filter>
+  </unix:file_object>
+
+  <unix:file_state id="state_custom_var_log_root_dir" version="1">
+    <unix:path operation="equals">/var/log</unix:path>
+  </unix:file_state>
+
+  <unix:file_state id="state_custom_var_log_dirs" version="1" operator="AND">
+    <unix:gwrite datatype="boolean">false</unix:gwrite>
     <unix:oread datatype="boolean">false</unix:oread>
     <unix:owrite datatype="boolean">false</unix:owrite>
     <unix:oexec datatype="boolean">false</unix:oexec>

@@ -19,7 +19,7 @@ identifiers:
     cce@rhel9: CCE-83726-0
     cce@rhel10: CCE-87480-0
     cce@sle12: CCE-91605-6
-    cce@sle15: CCE-85810-0
+    cce@: CCE-85810-0
     cce@sle16: CCE-96232-4
 
 references:

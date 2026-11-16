@@ -1,5 +1,21 @@
 documentation_complete: true
+
 title: 'Ensure All Non-Root Users Home Directories Exist'
-description: 'All users defined in /etc/passwd (except root) must have a home directory.'
-rationale: 'Home directories are required for users to store user-specific configuration files.'
+
+description: |-
+    The home directory of every local user defined in <tt>/etc/passwd</tt>
+    with a UID other than 0 and an interactive shell (not <tt>nologin</tt>
+    or <tt>false</tt>) must exist. No path is excluded. A missing home
+    directory is created owned by its user, with <tt>0750</tt> permissions.
+
+rationale: |-
+    Home directories are required for users to store user-specific
+    configuration files.
+
 severity: medium
+
+ocil_clause: 'any of these users has no home directory'
+
+ocil: |-
+    Run the following command. It must return no output:
+    <pre>$ awk -F: '$3 != 0' /etc/passwd | awk -F: '$7 !~ /(nologin|false)$/ { print $6 }' | while read -r d; do test -d "$d" || echo "$d"; done</pre>

@@ -17,7 +17,7 @@
     <ind:filepath>{{{ login_defs_path }}}</ind:filepath>
     <!-- Retrieve last (uncommented) occurrence of PASS_MIN_DAYS directive -->
     <ind:pattern operation="pattern match">.*\n[^#]*(PASS_MIN_DAYS\s+\d+)\s*\n</ind:pattern>
-    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+    <ind:instance datatype="int" operation="equals">1</ind:instance>
   </ind:textfilecontent54_object>
 
   <!-- Capture the actual PASS_MIN_DAYS integer value from the previously retrieved last instance -->
@@ -35,7 +35,7 @@
   <!-- Define corresponding variable state (the requirement) for the variable object -->
   <!-- The check should PASS if retrieved last PASS_MIN_DAYS value is greater than or equal to the requirement -->
   <ind:variable_state id="state_last_pass_min_days_instance_value" version="1">
-    <ind:value operation="greater than or equal" var_ref="var_accounts_minimum_age_login_defs" datatype="int" var_check="at least one" />
+    <ind:value operation="equals" var_ref="var_accounts_minimum_age_login_defs" datatype="int" var_check="at least one" />
   </ind:variable_state>
 
   <external_variable comment="Minimum password age in days" datatype="int" id="var_accounts_minimum_age_login_defs" version="1" />

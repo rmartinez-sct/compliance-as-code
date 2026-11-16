@@ -1,0 +1,22 @@
+documentation_complete: true
+
+title: 'Set SSH Client Alive Interval (Custom)'
+
+description: |-
+    SSH allows administrators to set a network responsiveness timeout interval.
+    To set this timeout interval, edit the following line in <tt>/etc/ssh/sshd_config</tt> as follows:
+    <pre>ClientAliveInterval {{{ xccdf_value("sshd_idle_timeout_value") }}}</pre>
+
+rationale: |-
+    Terminating an idle ssh session within a short time period reduces the window of
+    opportunity for unauthorized personnel to take control of a management session.
+
+severity: medium
+
+ocil_clause: 'it is commented out or not configured properly'
+
+ocil: |-
+    Run the following command to see what the timeout interval is:
+    <pre>$ sudo grep ClientAliveInterval /etc/ssh/sshd_config</pre>
+    If properly configured, the output should be:
+    <pre>ClientAliveInterval {{{ xccdf_value("sshd_idle_timeout_value") }}}</pre>

@@ -1,37 +1,85 @@
-<def-group>
+<def-group xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
-    {{{ oval_metadata("Ensure home directories are owned by a valid user.") }}}
-    <criteria>
-      <criterion test_ref="test_custom_home_dirs_owner_suse" />
+    {{{ oval_metadata("Home directories are owned by their respective user.") }}}
+    <criteria operator="AND">
+      <criterion test_ref="test_custom_home_dirs_owner_suse" comment="every home is owned by one of the users in scope"/>
+      <criterion test_ref="test_custom_home_dirs_owner_unique_suse" comment="no two homes share the same owner"/>
     </criteria>
   </definition>
 
-  <unix:file_test check="all" check_existence="at_least_one_exists" id="test_custom_home_dirs_owner_suse" version="1" comment="Check ownership">
-    <unix:object object_ref="obj_custom_home_dirs_owner_suse" />
-    <unix:state state_ref="state_custom_home_dirs_owner_suse" />
+  <!-- OVAL cannot pair "this home" with "this user": a state compares against a whole list of UIDs.
+       Two conditions are combined instead:
+         1. every home is owned by a user that is in scope (catches root, orphan UIDs, outsiders);
+         2. the homes have as many distinct owners as there are homes (catches a home owned by
+            another user whose own home is also theirs).
+       The remediation sets each owner exactly, so after it both conditions hold. -->
+
+  <!-- ===== Condition 1: owner is one of the users in scope ===== -->
+  <unix:file_test check="all" check_existence="any_exist" id="test_custom_home_dirs_owner_suse" version="1" comment="Check ownership">
+    <unix:object object_ref="obj_custom_home_dirs_owner_suse"/>
+    <unix:state state_ref="state_custom_home_dirs_owner_suse"/>
   </unix:file_test>
 
-  <unix:file_object id="obj_custom_home_dirs_owner_suse" version="1">
-    <unix:filepath var_ref="var_custom_home_dirs_owner_suse" var_check="at least one" />
-    <filter action="exclude">state_custom_exclude_sys_dirs_owner_suse</filter>
+  <unix:file_state id="state_custom_home_dirs_owner_suse" version="1" comment="the owner is one of the users in scope">
+    <unix:user_id datatype="int" operation="equals" var_check="at least one" var_ref="var_custom_home_owner_uids_suse"/>
+  </unix:file_state>
+
+  <!-- ===== Condition 2: as many distinct owners as homes ===== -->
+  <ind:variable_test check="all" check_existence="at_least_one_exists" id="test_custom_home_dirs_owner_unique_suse" version="1" comment="distinct owners == homes found">
+    <ind:object object_ref="obj_custom_home_owner_count_suse"/>
+    <ind:state state_ref="state_custom_home_owner_count_equal_suse"/>
+  </ind:variable_test>
+
+  <ind:variable_object id="obj_custom_home_owner_count_suse" version="1" comment="number of distinct owners among the homes found">
+    <ind:var_ref>var_custom_home_owner_count_suse</ind:var_ref>
+  </ind:variable_object>
+
+  <ind:variable_state id="state_custom_home_owner_count_equal_suse" version="1" comment="must equal the number of homes found">
+    <ind:value datatype="int" operation="equals" var_ref="var_custom_home_path_count_suse"/>
+  </ind:variable_state>
+
+  <local_variable id="var_custom_home_owner_count_suse" datatype="int" version="1" comment="distinct owners among the homes found">
+    <count>
+      <unique>
+        <object_component object_ref="obj_custom_home_dirs_owner_suse" item_field="user_id"/>
+      </unique>
+    </count>
+  </local_variable>
+
+  <local_variable id="var_custom_home_path_count_suse" datatype="int" version="1" comment="distinct homes found">
+    <count>
+      <unique>
+        <object_component object_ref="obj_custom_home_dirs_owner_suse" item_field="path"/>
+      </unique>
+    </count>
+  </local_variable>
+
+  <!-- ===== Homes in scope (directories addressed with path + nil filename, no recursion) ===== -->
+  <unix:file_object id="obj_custom_home_dirs_owner_suse" version="1" comment="home directories in scope">
+    <unix:behaviors recurse="symlinks and directories" recurse_direction="none" max_depth="-1" recurse_file_system="all"/>
+    <unix:path var_ref="var_custom_home_dirs_owner_suse" var_check="at least one"/>
+    <unix:filename xsi:nil="true"/>
   </unix:file_object>
 
-  <unix:file_state id="state_custom_exclude_sys_dirs_owner_suse" version="1">
-    <unix:filepath operation="pattern match">^(/|/bin.*|/sbin.*|/usr.*|/dev.*|/nonexistent|/var.*|/run.*|/proc.*|/sys.*)$</unix:filepath>
-  </unix:file_state>
-
-  <unix:file_state id="state_custom_home_dirs_owner_suse" version="1">
-    <unix:user_id datatype="int" operation="greater than">0</unix:user_id>
-  </unix:file_state>
-
+  <!-- Scope (same in both patterns): UID != 0, interactive shell (not nologin/false), and a home that is
+       not /, /bin, /sbin, /usr, /dev, /proc or /sys (nor below them). -->
   <ind:textfilecontent54_object id="obj_custom_etc_passwd_homes_owner_suse" version="1">
     <ind:filepath>/etc/passwd</ind:filepath>
-    <!-- Replica Ansible: UID >= 1 y Shell no contiene nologin ni false -->
-    <ind:pattern operation="pattern match">^[^:]+:[^:]+:[1-9][0-9]*:[^:]*:[^:]*:([^:]+):(?![^:]*(?:nologin|false)$)[^:]+$</ind:pattern>
+    <ind:pattern operation="pattern match">^[^:]+:[^:]*:[1-9][0-9]*:[^:]*:[^:]*:(?!(?:/|/(?:bin|sbin|usr|dev|proc|sys))(?:/[^:]*)?:)([^:]+?)/?:(?![^:]*(?:nologin|false)$)[^:]+$</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
 
-  <local_variable id="var_custom_home_dirs_owner_suse" datatype="string" version="1" comment="Directorios home legitimos">
-    <object_component object_ref="obj_custom_etc_passwd_homes_owner_suse" item_field="subexpression" />
+  <ind:textfilecontent54_object id="obj_custom_etc_passwd_uids_owner_suse" version="1">
+    <ind:filepath>/etc/passwd</ind:filepath>
+    <ind:pattern operation="pattern match">^[^:]+:[^:]*:([1-9][0-9]*):[^:]*:[^:]*:(?!(?:/|/(?:bin|sbin|usr|dev|proc|sys))(?:/[^:]*)?:)[^:]+:(?![^:]*(?:nologin|false)$)[^:]+$</ind:pattern>
+    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <local_variable id="var_custom_home_dirs_owner_suse" datatype="string" version="1" comment="home directories in scope">
+    <object_component object_ref="obj_custom_etc_passwd_homes_owner_suse" item_field="subexpression"/>
+  </local_variable>
+
+  <local_variable id="var_custom_home_owner_uids_suse" datatype="int" version="1" comment="UIDs of the users in scope">
+    <object_component object_ref="obj_custom_etc_passwd_uids_owner_suse" item_field="subexpression"/>
   </local_variable>
 </def-group>

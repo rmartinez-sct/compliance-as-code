@@ -1,5 +1,24 @@
 documentation_complete: true
+
 title: 'Ensure All Non-Root Users Home Directories Have Correct Ownership'
-description: 'Home directories must be owned by their respective non-root user.'
-rationale: 'Incorrect ownership can allow unauthorized modification of user files.'
+
+description: |-
+    The home directory of every local user defined in <tt>/etc/passwd</tt>
+    with a UID other than 0 and an interactive shell (not <tt>nologin</tt>
+    or <tt>false</tt>) must be owned by that user: <tt>/home/casiopea</tt> by
+    <tt>casiopea</tt>, <tt>/var/lib/nobody</tt> by <tt>nobody</tt>. Home
+    directories located in <tt>/</tt>, <tt>/bin</tt>, <tt>/sbin</tt>,
+    <tt>/usr</tt>, <tt>/dev</tt>, <tt>/proc</tt> and <tt>/sys</tt> are never
+    evaluated nor modified.
+
+rationale: |-
+    Incorrect ownership can allow unauthorized modification of user files.
+
 severity: medium
+
+ocil_clause: 'any home directory is not owned by its user'
+
+ocil: |-
+    Run the following command. It must return no output (homes in the
+    system paths listed above are ignored):
+    <pre>$ awk -F: '$3 != 0' /etc/passwd | awk -F: '$7 !~ /(nologin|false)$/ { print $3, $6 }' | while read -r u d; do find "$d" -maxdepth 0 ! -uid "$u" 2>/dev/null; done</pre>

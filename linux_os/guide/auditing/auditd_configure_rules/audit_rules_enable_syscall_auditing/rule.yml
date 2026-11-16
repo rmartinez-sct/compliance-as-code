@@ -19,15 +19,15 @@ severity: medium
 
 identifiers:
     cce@sle12: CCE-83119-8
-    cce@sle15: CCE-85706-0
+    cce@: CCE-85706-0
     cce@sle16: CCE-96314-0
     cce@slmicro5: CCE-93739-1
 
 references:
-    nist@sle15: CM-6(b),CM-6.1(iv)
+    nist@: CM-6(b),CM-6.1(iv)
     srg: SRG-OS-000480-GPOS-00227
     stigid@sle12: SLES-12-020199
-    stigid@sle15: SLES-15-030820
+    stigid@: SLES-15-030820
 
 
 ocil_clause: 'syscall auditing is still disabled'

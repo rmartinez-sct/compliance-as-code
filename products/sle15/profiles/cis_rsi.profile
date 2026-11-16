@@ -20,7 +20,7 @@ selections:
     - var_password_pam_lcredit=1
     - var_password_pam_retry=3
     - var_accounts_maximum_age_login_defs=90
-    - var_accounts_minimum_age_login_defs=7
+    - var_accounts_minimum_age_login_defs=1
     - var_password_pam_tally2=5
     - var_accounts_passwords_pam_tally2_unlock_time=900
 
@@ -96,7 +96,8 @@ selections:
     - sshd_use_strong_ciphers
     #- sshd_use_strong_kex
     - custom_sshd_use_strong_kex
-    - sshd_set_idle_timeout
+    #- sshd_set_idle_timeout
+    - custom_sshd_set_idle_timeout
     - custom_sshd_set_keepalive_max
     - sshd_set_login_grace_time
     #- sshd_limit_user_access
@@ -136,16 +137,16 @@ selections:
     #- custom_perms_var_log_apps_suse
     #- custom_perms_var_log_general
     #- custom_var_log_security_recursive
-    #- custom_var_log_security_recursive_suse
+    - custom_var_log_security_recursive_suse
     - custom_accounts_tmout
     #- custom_no_files_or_dirs_ungroupowned
-    - custom_no_files_or_dirs_ungroupowned_suse
+    - custom_no_files_or_dirs_ungroupowned_unowned_suse
+    #- custom_no_files_or_dirs_ungroupowned_suse
     #- custom_no_files_or_dirs_unowned
-    - custom_no_files_or_dirs_unowned_suse
+    #- custom_no_files_or_dirs_unowned_suse
     #- custom_all_users_home_directories_secured
     #-  custom_all_users_home_directories_secured_suse
     - custom_home_directory_exists_suse
     - custom_file_permissions_home_directories_750_suse
     - custom_file_ownership_home_directories_suse
     - custom_sshd_disable_rsa_authentication
-    - Prueba
