@@ -1,11 +1,16 @@
-<def-group>
+<def-group xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
     {{{ oval_metadata("No file or directory on local file systems has an unknown owner or group.") }}}
     <criteria operator="AND">
-      <criterion test_ref="test_{{{ rule_id }}}_nouser" comment="no file or directory with an unknown UID"/>
-      <criterion test_ref="test_{{{ rule_id }}}_nogroup" comment="no file or directory with an unknown GID"/>
+      <criterion test_ref="test_{{{ rule_id }}}_nouser" comment="no file or symlink with a UID missing from /etc/passwd"/>
+      <criterion test_ref="test_{{{ rule_id }}}_nouser_dirs" comment="no directory with a UID missing from /etc/passwd"/>
+      <criterion test_ref="test_{{{ rule_id }}}_nogroup" comment="no file or symlink with a GID missing from /etc/group"/>
+      <criterion test_ref="test_{{{ rule_id }}}_nogroup_dirs" comment="no directory with a GID missing from /etc/group"/>
     </criteria>
   </definition>
+
+  <!-- OpenSCAP returns directories only when filename is nil, and files only when filename is given:
+       files and directories are therefore separate objects, each with its own test. -->
 
   <!-- ===== TUNABLE: IDs that exist only in the directory service (not in /etc/passwd or /etc/group) ===== -->
   <constant_variable id="var_{{{ rule_id }}}_domain_min_id" version="1" datatype="int" comment="UID/GID at or above this value belong to domain accounts">
@@ -67,7 +72,7 @@
     <unix:group_id datatype="int" operation="equals" var_check="at least one" var_ref="var_{{{ rule_id }}}_domain_gids"/>
   </unix:file_state>
 
-  <!-- ===== Everything under / on local file systems, minus entries with a known owner / group ===== -->
+  <!-- ===== Files and symlinks (filename given), minus entries with a known owner / group ===== -->
   <unix:file_object id="obj_{{{ rule_id }}}_nouser" version="1">
     <unix:behaviors recurse="directories" recurse_direction="down" recurse_file_system="local" max_depth="-1"/>
     <unix:path operation="equals">/</unix:path>
@@ -86,12 +91,39 @@
     <filter action="exclude">state_{{{ rule_id }}}_domain_group_list</filter>
   </unix:file_object>
 
+  <!-- ===== Directories (filename nil), same filters ===== -->
+  <unix:file_object id="obj_{{{ rule_id }}}_nouser_dirs" version="1">
+    <unix:behaviors recurse="directories" recurse_direction="down" recurse_file_system="local" max_depth="-1"/>
+    <unix:path operation="equals">/</unix:path>
+    <unix:filename xsi:nil="true"/>
+    <filter action="exclude">state_{{{ rule_id }}}_local_user</filter>
+    <filter action="exclude">state_{{{ rule_id }}}_domain_user_range</filter>
+    <filter action="exclude">state_{{{ rule_id }}}_domain_user_list</filter>
+  </unix:file_object>
+
+  <unix:file_object id="obj_{{{ rule_id }}}_nogroup_dirs" version="1">
+    <unix:behaviors recurse="directories" recurse_direction="down" recurse_file_system="local" max_depth="-1"/>
+    <unix:path operation="equals">/</unix:path>
+    <unix:filename xsi:nil="true"/>
+    <filter action="exclude">state_{{{ rule_id }}}_local_group</filter>
+    <filter action="exclude">state_{{{ rule_id }}}_domain_group_range</filter>
+    <filter action="exclude">state_{{{ rule_id }}}_domain_group_list</filter>
+  </unix:file_object>
+
   <!-- PASS only if the filtered objects collect nothing -->
-  <unix:file_test id="test_{{{ rule_id }}}_nouser" version="1" check="all" check_existence="none_exist" comment="files or directories with an unknown UID">
+  <unix:file_test id="test_{{{ rule_id }}}_nouser" version="1" check="all" check_existence="none_exist" comment="files or symlinks with an unknown UID">
     <unix:object object_ref="obj_{{{ rule_id }}}_nouser"/>
   </unix:file_test>
 
-  <unix:file_test id="test_{{{ rule_id }}}_nogroup" version="1" check="all" check_existence="none_exist" comment="files or directories with an unknown GID">
+  <unix:file_test id="test_{{{ rule_id }}}_nouser_dirs" version="1" check="all" check_existence="none_exist" comment="directories with an unknown UID">
+    <unix:object object_ref="obj_{{{ rule_id }}}_nouser_dirs"/>
+  </unix:file_test>
+
+  <unix:file_test id="test_{{{ rule_id }}}_nogroup" version="1" check="all" check_existence="none_exist" comment="files or symlinks with an unknown GID">
     <unix:object object_ref="obj_{{{ rule_id }}}_nogroup"/>
+  </unix:file_test>
+
+  <unix:file_test id="test_{{{ rule_id }}}_nogroup_dirs" version="1" check="all" check_existence="none_exist" comment="directories with an unknown GID">
+    <unix:object object_ref="obj_{{{ rule_id }}}_nogroup_dirs"/>
   </unix:file_test>
 </def-group>

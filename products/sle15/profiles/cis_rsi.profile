@@ -23,6 +23,7 @@ selections:
     - var_accounts_minimum_age_login_defs=1
     - var_password_pam_tally2=5
     - var_accounts_passwords_pam_tally2_unlock_time=900
+    - var_accounts_minimum_age_login_defs=1
 
     # --- REGLAS NATIVAS DE SISTEMA Y RED ---
     - mount_option_tmp_nodev
@@ -120,6 +121,7 @@ selections:
     - accounts_password_pam_pwhistory_enabled
     - accounts_password_pam_pwhistory_remember
     - accounts_maximum_age_login_defs
+    - accounts_password_set_min_life_existing
     - accounts_password_set_max_life_existing
     - accounts_minimum_age_login_defs
     - accounts_password_all_shadowed
@@ -150,3 +152,4 @@ selections:
     - custom_file_permissions_home_directories_750_suse
     - custom_file_ownership_home_directories_suse
     - custom_sshd_disable_rsa_authentication
+
