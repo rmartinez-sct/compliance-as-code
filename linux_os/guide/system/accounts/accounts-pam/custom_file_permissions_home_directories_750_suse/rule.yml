@@ -1,25 +1,25 @@
 documentation_complete: true
 
-title: 'Ensure All Non-Root Users Home Directories Have 0750 Permissions'
+title: 'Ensure Interactive Users Home Directories Have 0750 Permissions or More Restrictive'
 
 description: |-
-    The home directory of every local user with a UID other than 0 and an
-    interactive shell (not <tt>nologin</tt> or <tt>false</tt>) must have
-    permissions of <tt>0750</tt> or stricter: no write access for the group
-    and no access at all for others. No path is excluded. Every directory
-    located directly under <tt>/home</tt> is also checked, including those of
-    users that exist only in the directory service and not in
-    <tt>/etc/passwd</tt>.
+    The home directory of every local interactive user (UID other than 0,
+    excluding <tt>halt</tt>, <tt>sync</tt>, and <tt>shutdown</tt>, and with a
+    shell other than <tt>/usr/sbin/nologin</tt>, <tt>/usr/bin/false</tt>,
+    <tt>/sbin/nologin</tt>, or <tt>/bin/false</tt>) must have permissions of
+    <tt>0750</tt> or stricter (mask <tt>0027</tt>: no write access for group
+    and no access for others). Root directory (<tt>/</tt>) and symbolic links
+    are excluded.
 
 rationale: |-
-    Permissive rights on a home directory allow unauthorized users to view
-    or modify the files of its owner.
+    Group or world-writable user home directories may enable malicious users
+    to steal or modify other users' data or to gain another user's system
+    privileges.
 
 severity: medium
 
-ocil_clause: 'any home directory is writable by the group or accessible by others'
+ocil_clause: 'any local interactive user home directory has permissions more permissive than 0750'
 
 ocil: |-
-    Run the following commands. Any directory they print is too permissive:
-    <pre>$ for d in $(awk -F: '$3 != 0' /etc/passwd | awk -F: '$7 !~ /(nologin|false)$/ { print $6 }'); do find "$d" -maxdepth 0 -perm /027 2>/dev/null; done</pre>
-    <pre>$ find /home -mindepth 1 -maxdepth 1 -type d -perm /027</pre>
+    Run the following command. Any directory printed has permissions more permissive than 0750:
+    <pre>$ awk -F: '($1 !~ /^(root|halt|sync|shutdown)$/ &amp;&amp; $3 != 0 &amp;&amp; $6 != "/" &amp;&amp; $7 !~ /^(\/usr)?\/(sbin\/nologin|bin\/false)$/) { print $6 }' /etc/passwd | sort -u | while read -r dir; do [ -d "$dir" ] &amp;&amp; [ ! -L "$dir" ] &amp;&amp; find "$dir" -maxdepth 0 -perm /0027; done</pre>

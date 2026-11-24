@@ -234,5 +234,6 @@ rules:
 - custom_ensure_gpgcheck_zypper
 - custom_sshd_set_idle_timeout
 - custom_no_files_or_dirs_ungroupowned_unowned_suse
+- zz_custom_pam_enforce_order
 templates:
 - pam_options

@@ -5,6 +5,8 @@ title: 'All Interactive User and Root Home Directories Must Be Group-Owned By Th
 description: |-
     This rule ensures every home directory related to an interactive user,
     as well as the root user, is group-owned by its respective user's primary group.
+    Interactive users are the local users with a UID of 1000 or more, other than
+    <tt>nobody</tt>, whose shell is not <tt>nologin</tt> or <tt>false</tt>.
 
 rationale: |-
     If a user (including root) does not group-own their home directory, unauthorized
@@ -18,4 +20,5 @@ identifiers:
 ocil_clause: 'the group ownership is incorrect'
 
 ocil: |-
-    Check that /root is group-owned by root (gid 0), and all interactive users group-own their home directories.
+    Run the following command. It must return no output:
+    <pre>$ awk -F: '$3 == 0 || $3 >= 1000' /etc/passwd | awk -F: '$3 != 65534 { print $4, $6 }' | while read -r g d; do find "$d" -maxdepth 0 ! -gid "$g" 2>/dev/null; done</pre>

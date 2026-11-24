@@ -82,7 +82,7 @@ selections:
 
     # Logs y Auditoría
     #- rsyslog_logging_configured
-    - rsyslog_remote_loghost
+    #- rsyslog_remote_loghost
     - custom_rsyslog_logging_configured
     #- file_permissions_var_log
     - custom_perms_var_log_login

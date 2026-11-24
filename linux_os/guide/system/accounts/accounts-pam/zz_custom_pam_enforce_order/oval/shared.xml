@@ -1,0 +1,59 @@
+<def-group>
+  <definition class="compliance" id="{{{ rule_id }}}" version="1">
+    {{{ oval_metadata("Ensure pam_cracklib.so, pam_pwhistory.so, and pam_tally2.so are properly ordered in PAM files.") }}}
+    <criteria operator="AND">
+      <criterion test_ref="test_pam_order_cracklib_common_password" comment="pam_cracklib.so appears before pam_unix.so in /etc/pam.d/common-password"/>
+      <criterion test_ref="test_pam_order_pwhistory_common_password" comment="pam_pwhistory.so appears before pam_unix.so in /etc/pam.d/common-password"/>
+      <criterion test_ref="test_pam_order_tally2_login" comment="pam_tally2.so appears before common-auth in /etc/pam.d/login"/>
+      <criterion test_ref="test_pam_order_tally2_common_account" comment="pam_tally2.so appears before pam_unix.so in /etc/pam.d/common-account"/>
+    </criteria>
+  </definition>
+
+  <!-- 1. /etc/pam.d/common-password: pam_cracklib.so antes de pam_unix.so -->
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" id="test_pam_order_cracklib_common_password" version="1" comment="pam_cracklib.so before pam_unix.so">
+    <ind:object object_ref="obj_pam_order_cracklib_common_password"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_pam_order_cracklib_common_password" version="1">
+    <ind:behaviors multiline="true"/>
+    <ind:filepath>/etc/pam.d/common-password</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*password\s+[^\n]*pam_cracklib\.so[\s\S]*^\s*password\s+[^\n]*pam_unix\.so</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <!-- 2. /etc/pam.d/common-password: pam_pwhistory.so antes de pam_unix.so -->
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" id="test_pam_order_pwhistory_common_password" version="1" comment="pam_pwhistory.so before pam_unix.so">
+    <ind:object object_ref="obj_pam_order_pwhistory_common_password"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_pam_order_pwhistory_common_password" version="1">
+    <ind:behaviors multiline="true"/>
+    <ind:filepath>/etc/pam.d/common-password</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*password\s+[^\n]*pam_pwhistory\.so[\s\S]*^\s*password\s+[^\n]*pam_unix\.so</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <!-- 3. /etc/pam.d/login: pam_tally2.so antes de common-auth (o pam_unix.so) -->
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" id="test_pam_order_tally2_login" version="1" comment="pam_tally2.so before common-auth in login">
+    <ind:object object_ref="obj_pam_order_tally2_login"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_pam_order_tally2_login" version="1">
+    <ind:behaviors multiline="true"/>
+    <ind:filepath>/etc/pam.d/login</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*auth\s+[^\n]*pam_tally2\.so[\s\S]*^\s*auth\s+[^\n]*(?:common-auth|pam_unix\.so)</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+
+  <!-- 4. /etc/pam.d/common-account: pam_tally2.so antes de pam_unix.so -->
+  <ind:textfilecontent54_test check="all" check_existence="at_least_one_exists" id="test_pam_order_tally2_common_account" version="1" comment="pam_tally2.so before pam_unix.so in common-account">
+    <ind:object object_ref="obj_pam_order_tally2_common_account"/>
+  </ind:textfilecontent54_test>
+
+  <ind:textfilecontent54_object id="obj_pam_order_tally2_common_account" version="1">
+    <ind:behaviors multiline="true"/>
+    <ind:filepath>/etc/pam.d/common-account</ind:filepath>
+    <ind:pattern operation="pattern match">^\s*account\s+[^\n]*pam_tally2\.so[\s\S]*^\s*account\s+[^\n]*pam_unix\.so</ind:pattern>
+    <ind:instance datatype="int">1</ind:instance>
+  </ind:textfilecontent54_object>
+</def-group>

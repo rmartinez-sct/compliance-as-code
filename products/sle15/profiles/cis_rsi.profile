@@ -69,7 +69,7 @@ selections:
     - sysctl_net_ipv4_conf_all_rp_filter
     - sysctl_net_ipv4_conf_default_rp_filter
     #- firewalld_loopback_traffic_trusted
-    - rsyslog_remote_loghost
+    #- rsyslog_remote_loghost
     
     # --- REGLAS NATIVAS DE TAREAS PROGRAMADAS (CRON) ---
     - file_groupowner_cron_hourly
@@ -152,4 +152,5 @@ selections:
     - custom_file_permissions_home_directories_750_suse
     - custom_file_ownership_home_directories_suse
     - custom_sshd_disable_rsa_authentication
+    - zz_custom_pam_enforce_order
 

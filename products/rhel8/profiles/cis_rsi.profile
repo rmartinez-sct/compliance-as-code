@@ -63,7 +63,7 @@ selections:
     - file_owner_cron_monthly
 
     # --- Logs y Auditoría ---
-    - rsyslog_remote_loghost
+    #- rsyslog_remote_loghost
     #- rsyslog_remote_tls  ---- esta regla no interfiere en el bastionado pedido ----
     #- rsyslog_remote_tls_cacert  --- esta regla no interfiere en el bastionado pedido ----
 

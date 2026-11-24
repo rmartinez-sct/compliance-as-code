@@ -1,60 +1,41 @@
 <def-group>
   <definition class="compliance" id="{{{ rule_id }}}" version="1">
-    {{{ oval_metadata("Home directories have 0750 permissions or stricter.") }}}
-    <criteria operator="AND">
-      <criterion test_ref="test_custom_home_dirs_perms_suse" comment="homes of the users listed in /etc/passwd"/>
-      <criterion test_ref="test_custom_home_subdirs_perms_suse" comment="every directory directly under /home (includes directory-service users)"/>
+    {{{ oval_metadata("Ensure local interactive users home directories have 0750 permissions or more restrictive.") }}}
+    <criteria>
+      <criterion test_ref="test_custom_interactive_home_perms_suse" comment="Local interactive users home directories have 0750 permissions or stricter"/>
     </criteria>
   </definition>
 
-  <!-- any_exist: a system without eligible homes is compliant. A probe that silently collects nothing is
-       caught by the negative test (chmod 777 on a home must turn the result into fail). -->
-
-  <!-- ===== 1. Homes listed in /etc/passwd ===== -->
-  <unix:file_test check="all" check_existence="any_exist" id="test_custom_home_dirs_perms_suse" version="1" comment="Check permissions of homes listed in /etc/passwd">
-    <unix:object object_ref="obj_custom_home_dirs_perms_suse"/>
-    <unix:state state_ref="state_custom_home_dirs_perms_suse"/>
+  <unix:file_test check="all" check_existence="any_exist" id="test_custom_interactive_home_perms_suse" version="1" comment="Check 0750 permissions on local interactive user homes">
+    <unix:object object_ref="obj_custom_interactive_home_perms_suse"/>
+    <unix:state state_ref="state_custom_interactive_home_perms_suse"/>
   </unix:file_test>
 
-  <!-- Directories are addressed with path + nil filename (not filepath), without recursion -->
-  <unix:file_object id="obj_custom_home_dirs_perms_suse" version="1" comment="home directories of local users with an interactive shell">
-    <unix:behaviors recurse="symlinks and directories" recurse_direction="none" max_depth="-1" recurse_file_system="all"/>
-    <unix:path var_ref="var_custom_home_dirs_perms_suse" var_check="at least one"/>
+  <!-- Evalúa solo directorios reales (excluye symlinks), sin recursividad -->
+  <unix:file_object id="obj_custom_interactive_home_perms_suse" version="1" comment="Home directories of local interactive users">
+    <unix:behaviors recurse="directories" recurse_direction="none" max_depth="-1" recurse_file_system="all"/>
+    <unix:path var_ref="var_custom_interactive_home_dirs_suse" var_check="at least one"/>
     <unix:filename xsi:nil="true"/>
+    <filter action="exclude">state_custom_interactive_home_is_symlink_suse</filter>
   </unix:file_object>
 
-  <!-- Homes come from /etc/passwd: UID != 0 and interactive shell (not nologin/false).
-       No path is excluded. -->
-  <ind:textfilecontent54_object id="obj_custom_etc_passwd_homes_perms_suse" version="1">
+  <unix:file_state id="state_custom_interactive_home_is_symlink_suse" version="1">
+    <unix:type operation="equals">symbolic link</unix:type>
+  </unix:file_state>
+
+  <!-- Excluye root/halt/sync/shutdown, UID 0, home igual a "/" y shells nologin/false -->
+  <ind:textfilecontent54_object id="obj_custom_etc_passwd_interactive_homes_suse" version="1">
     <ind:filepath>/etc/passwd</ind:filepath>
-    <ind:pattern operation="pattern match">^[^:]+:[^:]*:[1-9][0-9]*:[^:]*:[^:]*:([^:]+):(?![^:]*(?:nologin|false)$)[^:]+$</ind:pattern>
+    <ind:pattern operation="pattern match">^(?!(?:root|halt|sync|shutdown):)[^:\n]+:[^:\n]*:[1-9][0-9]*:[^:\n]*:[^:\n]*:(/[^:\n]+?)/?:(?!(?:/usr)?/(?:sbin/nologin|bin/false)$)[^:\n]+$</ind:pattern>
     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
   </ind:textfilecontent54_object>
 
-  <local_variable id="var_custom_home_dirs_perms_suse" datatype="string" version="1" comment="home directories in scope">
-    <object_component object_ref="obj_custom_etc_passwd_homes_perms_suse" item_field="subexpression"/>
+  <local_variable id="var_custom_interactive_home_dirs_suse" datatype="string" version="1" comment="Home directories of local interactive users">
+    <object_component object_ref="obj_custom_etc_passwd_interactive_homes_suse" item_field="subexpression"/>
   </local_variable>
 
-  <!-- ===== 2. Every directory directly under /home (users that exist only in the directory service) ===== -->
-  <unix:file_test check="all" check_existence="any_exist" id="test_custom_home_subdirs_perms_suse" version="1" comment="Check permissions of directories under /home">
-    <unix:object object_ref="obj_custom_home_subdirs_perms_suse"/>
-    <unix:state state_ref="state_custom_home_dirs_perms_suse"/>
-  </unix:file_test>
-
-  <!-- /home itself is the starting point of the walk: it is excluded, only its children are checked -->
-  <unix:file_object id="obj_custom_home_subdirs_perms_suse" version="1" comment="first-level directories of /home">
-    <unix:behaviors recurse="directories" recurse_direction="down" max_depth="1" recurse_file_system="all"/>
-    <unix:path operation="equals">/home</unix:path>
-    <unix:filename xsi:nil="true"/>
-    <filter action="exclude">state_custom_home_root_dir_suse</filter>
-  </unix:file_object>
-
-  <unix:file_state id="state_custom_home_root_dir_suse" version="1">
-    <unix:path operation="equals">/home</unix:path>
-  </unix:file_state>
-
-  <!-- ===== Shared: 0750 or stricter == none of the bits in 0027 is set (group write, other read/write/execute) ===== -->
-  <unix:file_state id="state_custom_home_dirs_perms_suse" version="1" operator="AND">
+  <!-- Mask 0027: sin escritura para grupo ni ningún permiso para otros (0750 o más restrictivo) -->
+  <unix:file_state id="state_custom_interactive_home_perms_suse" version="1" operator="AND">
     <unix:gwrite datatype="boolean">false</unix:gwrite>
     <unix:oread datatype="boolean">false</unix:oread>
     <unix:owrite datatype="boolean">false</unix:owrite>

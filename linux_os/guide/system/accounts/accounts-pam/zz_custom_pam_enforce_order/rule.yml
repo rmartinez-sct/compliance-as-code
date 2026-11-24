@@ -1,0 +1,27 @@
+documentation_complete: true
+
+title: 'Ensure PAM Modules (pam_cracklib, pam_pwhistory, and pam_tally2) Are Properly Ordered'
+
+description: |-
+    Verify and enforce the execution order of PAM modules in SLES 15:
+    <ul>
+      <li><tt>pam_cracklib.so</tt> and <tt>pam_pwhistory.so</tt> must appear before <tt>pam_unix.so</tt> in <tt>/etc/pam.d/common-password</tt>.</li>
+      <li><tt>pam_tally2.so</tt> must appear before <tt>common-auth</tt> in <tt>/etc/pam.d/login</tt>.</li>
+      <li><tt>pam_tally2.so</tt> must appear before <tt>pam_unix.so</tt> in <tt>/etc/pam.d/common-account</tt>.</li>
+    </ul>
+
+rationale: |-
+    PAM evaluates modules sequentially from top to bottom. If password quality,
+    password history, or account lockout modules are placed at the end of the
+    stack (after sufficient or requisite modules such as pam_unix.so), they are
+    bypassed.
+
+severity: medium
+
+ocil_clause: 'pam_cracklib.so, pam_pwhistory.so, or pam_tally2.so are placed after their anchor modules'
+
+ocil: |-
+    Verify the module order in each file:
+    <pre>$ grep -nE 'pam_cracklib|pam_pwhistory|pam_unix' /etc/pam.d/common-password</pre>
+    <pre>$ grep -nE 'pam_tally2|common-auth' /etc/pam.d/login</pre>
+    <pre>$ grep -nE 'pam_tally2|pam_unix' /etc/pam.d/common-account</pre>
